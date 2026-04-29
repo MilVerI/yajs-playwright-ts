@@ -1,0 +1,24 @@
+{
+  "name": "yajs-playwright-ts",
+  "version": "1.0.0",
+  "description": "Repo for practice",
+  "main": "index.js",
+  "scripts": {
+    "chromium:run:all": "npx playwright test  --project=chromium —ui"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "devDependencies": {
+    "@eslint/js": "^9.39.4",
+    "@playwright/test": "^1.59.1",
+    "@stylistic/eslint-plugin": "^5.10.0",
+    "@types/node": "^25.6.0",
+    "eslint": "^9.39.4",
+    "globals": "^17.5.0",
+    "jiti": "^2.6.1",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.59.1"
+  }
+}
