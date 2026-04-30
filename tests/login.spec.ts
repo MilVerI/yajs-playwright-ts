@@ -15,6 +15,8 @@ interface LoginPage {
 }
 
 test('Login with valid credentials', async ({ page }) => {
+  test.skip(!!process.env.CI, 'Skipped on CI because of Cloudflare protection');
+
   await page.goto('/auth/login');
 
   // To convert to a page object in the future
