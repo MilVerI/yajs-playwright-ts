@@ -1,0 +1,13 @@
+.vscode
+
+# Playwright
+node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
+*/example.spec.ts
+
+# Files with sensetive and local-only variables
+.env.local
