@@ -22,14 +22,14 @@ test('Login with valid credentials', async ({ page }) => {
   // To convert to a page object in the future
   const loginPage: LoginPage = {
     loginForm: page.locator('app-login'),
-    emailAddress: page.locator('[data-test="email"]'),
-    password: page.locator('[data-test="password"]'),
-    submitLoginButton: page.locator('[data-test="login-submit"]'),
+    emailAddress: page.getByTestId('email'),
+    password: page.getByTestId('password'),
+    submitLoginButton: page.getByTestId('login-submit'),
   };
   // To convert to a page object in the future
   const accountPage = {
-    navigationMenu: page.locator('[data-test="nav-menu"]'),
-    pageTitle: page.locator('[data-test="page-title"]'),
+    navigationMenu: page.getByTestId('nav-menu'),
+    pageTitle: page.getByTestId('page-title'),
   };
 
   await expect(loginPage.loginForm).toBeVisible();
