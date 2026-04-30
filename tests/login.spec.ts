@@ -15,7 +15,7 @@ interface LoginPage {
 }
 
 test('Login with valid credentials', async ({ page }) => {
-  await page.goto('https://practicesoftwaretesting.com/auth/login');
+  await page.goto('/auth/login');
 
   // To convert to a page object in the future
   const loginPage: LoginPage = {
@@ -37,7 +37,7 @@ test('Login with valid credentials', async ({ page }) => {
 
   await loginPage.submitLoginButton.click();
 
-  await expect(page).toHaveURL('https://practicesoftwaretesting.com/account');
+  await expect(page).toHaveURL('/account');
   await expect(accountPage.pageTitle).toContainText('my account', {
     ignoreCase: true,
   });
