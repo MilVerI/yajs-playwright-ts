@@ -15,6 +15,7 @@ interface LoginPage {
 }
 
 test('Login with valid credentials', async ({ page }) => {
+  // eslint-disable-next-line playwright/no-skipped-test
   test.skip(!!process.env.CI, 'Skipped on CI because of Cloudflare protection');
 
   await page.goto('/auth/login');
