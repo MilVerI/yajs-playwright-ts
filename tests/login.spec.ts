@@ -1,48 +1,39 @@
 import { test, expect } from '@playwright/test';
 import { config } from 'dotenv';
-import type { Locator } from '@playwright/test';
+import { LoginPage } from '../pages/login.page.js';
+import { AccountPage } from '../pages/account.page.js';
 
 config({ path: '.env.local' });
 
-const validCustomerEmail = process.env.VALID_CUSTOMER_EMAIL as string;
-const validCustomerPassword = process.env.VALID_CUSTOMER_PASSWORD as string;
-
-interface LoginPage {
-  loginForm: Locator;
-  emailAddress: Locator;
-  password: Locator;
-  submitLoginButton: Locator;
-}
+//  move this to the fixture later if there are too many users as part of 'users'
+const validCustomer = {
+  email: process.env.VALID_CUSTOMER_EMAIL as string,
+  password: process.env.VALID_CUSTOMER_PASSWORD as string,
+  fullName: process.env.VALID_CUSTOMER_FULL_NAME as string,
+};
 
 test('Login with valid credentials', async ({ page }) => {
   // eslint-disable-next-line playwright/no-skipped-test
   test.skip(!!process.env.CI, 'Skipped on CI because of Cloudflare protection');
 
-  await page.goto('/auth/login');
+  const loginPage = new LoginPage(page);
+  const accountPage = new AccountPage(page);
 
-  // To convert to a page object in the future
-  const loginPage: LoginPage = {
-    loginForm: page.locator('app-login'),
-    emailAddress: page.getByTestId('email'),
-    password: page.getByTestId('password'),
-    submitLoginButton: page.getByTestId('login-submit'),
-  };
-  // To convert to a page object in the future
-  const accountPage = {
-    navigationMenu: page.getByTestId('nav-menu'),
-    pageTitle: page.getByTestId('page-title'),
-  };
+  await loginPage.navigateToLoginPage();
 
   await expect(loginPage.loginForm).toBeVisible();
 
-  await loginPage.emailAddress.fill(validCustomerEmail);
-  await loginPage.password.fill(validCustomerPassword);
+  await loginPage.login(validCustomer.email, validCustomer.password);
 
-  await loginPage.submitLoginButton.click();
-
+  // When I thought of creating the expectLoaded() method, I was intrested:
+  // is it a good idea to have an 'expect' directly inside the page object?
+  // And I found the page guarding concept.
+  // What do u think: is it better to keep all ‘expect’ inside the test
+  // or have some typical of the (like ‘ensure needed page is opened’) inside the page object?
   await expect(page).toHaveURL('/account');
   await expect(accountPage.pageTitle).toContainText('my account', {
     ignoreCase: true,
   });
-  await expect(accountPage.navigationMenu).toHaveText('Jane Doe');
+
+  await expect(accountPage.navigationMenu).toHaveText(validCustomer.fullName);
 });

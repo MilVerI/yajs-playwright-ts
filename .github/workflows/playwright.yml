@@ -23,6 +23,7 @@ jobs:
         env:
           VALID_CUSTOMER_EMAIL: ${{ secrets.VALID_CUSTOMER_EMAIL }}
           VALID_CUSTOMER_PASSWORD: ${{ secrets.VALID_CUSTOMER_PASSWORD }}
+          VALID_CUSTOMER_FULL_NAME: ${{ vars.VALID_CUSTOMER_FULL_NAME}}
           BASE_URL: ${{ vars.BASE_URL }}
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
