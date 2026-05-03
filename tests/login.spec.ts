@@ -12,7 +12,7 @@ const validCustomer = {
   fullName: process.env.VALID_CUSTOMER_FULL_NAME as string,
 };
 
-test('Login with valid credentials', async ({ page }) => {
+test('Verify login with valid credentials', async ({ page }) => {
   // eslint-disable-next-line playwright/no-skipped-test
   test.skip(!!process.env.CI, 'Skipped on CI because of Cloudflare protection');
 
@@ -25,11 +25,6 @@ test('Login with valid credentials', async ({ page }) => {
 
   await loginPage.login(validCustomer.email, validCustomer.password);
 
-  // When I thought of creating the expectLoaded() method, I was intrested:
-  // is it a good idea to have an 'expect' directly inside the page object?
-  // And I found the page guarding concept.
-  // What do u think: is it better to keep all ‘expect’ inside the test
-  // or have some typical of the (like ‘ensure needed page is opened’) inside the page object?
   await expect(page).toHaveURL('/account');
   await expect(accountPage.pageTitle).toContainText('my account', {
     ignoreCase: true,

@@ -24,7 +24,7 @@ npm install
 3. Install Playwright browsers:
 
 ```bash
-npx playwright install --help
+npx playwright install
 ```
 
 ## Configuration

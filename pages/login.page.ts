@@ -10,9 +10,9 @@ export class LoginPage {
   constructor(page: Page) {
     this.page = page;
     this.loginForm = page.locator('app-login');
-    this.emailAddressIput = page.getByTestId('email');
-    this.passwordInput = page.getByTestId('password');
-    this.submitLoginButton = page.getByTestId('login-submit');
+    this.emailAddressIput = this.loginForm.getByTestId('email');
+    this.passwordInput = this.loginForm.getByTestId('password');
+    this.submitLoginButton = this.loginForm.getByTestId('login-submit');
   }
 
   async navigateToLoginPage(): Promise<void> {
