@@ -95,9 +95,15 @@ npx playwright show-report
 
 ```
 yajs-playwright-ts/
+├── pages/                    # Page Object Model files
+│   ├── account.page.ts       # Account page object
+│   ├── header.fragment.ts    # Header fragment object
+│   ├── home.page.ts          # Home page object
+│   ├── login.page.ts         # Login page object
+│   └── product.page.ts       # Product page object
 ├── tests/                    # Test files
-│   ├── example.spec.ts      # Example test suite
-│   └── login.spec.ts        # Login test suite
+│   ├── login.spec.ts         # Login test suite
+│   └── products.spec.ts      # Products test suite
 ├── playwright-report/        # Generated test reports
 ├── test-results/            # Test execution results
 ├── playwright.config.ts     # Playwright configuration
