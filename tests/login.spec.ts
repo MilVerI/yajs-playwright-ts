@@ -1,47 +1,34 @@
 import { test, expect } from '@playwright/test';
 import { config } from 'dotenv';
-import type { Locator } from '@playwright/test';
+import { LoginPage } from '../pages/login.page.js';
+import { AccountPage } from '../pages/account.page.js';
 
 config({ path: '.env.local' });
 
-const validCustomerEmail = process.env.VALID_CUSTOMER_EMAIL as string;
-const validCustomerPassword = process.env.VALID_CUSTOMER_PASSWORD as string;
+//  move this to the fixture later if there are too many users as part of 'users'
+const validCustomer = {
+  email: process.env.VALID_CUSTOMER_EMAIL as string,
+  password: process.env.VALID_CUSTOMER_PASSWORD as string,
+  fullName: process.env.VALID_CUSTOMER_FULL_NAME as string,
+};
 
-interface LoginPage {
-  loginForm: Locator;
-  emailAddress: Locator;
-  password: Locator;
-  submitLoginButton: Locator;
-}
-
-test('Login with valid credentials', async ({ page }) => {
+test('Verify login with valid credentials', async ({ page }) => {
+  // eslint-disable-next-line playwright/no-skipped-test
   test.skip(!!process.env.CI, 'Skipped on CI because of Cloudflare protection');
 
-  await page.goto('/auth/login');
+  const loginPage = new LoginPage(page);
+  const accountPage = new AccountPage(page);
 
-  // To convert to a page object in the future
-  const loginPage: LoginPage = {
-    loginForm: page.locator('app-login'),
-    emailAddress: page.getByTestId('email'),
-    password: page.getByTestId('password'),
-    submitLoginButton: page.getByTestId('login-submit'),
-  };
-  // To convert to a page object in the future
-  const accountPage = {
-    navigationMenu: page.getByTestId('nav-menu'),
-    pageTitle: page.getByTestId('page-title'),
-  };
+  await loginPage.navigateToLoginPage();
 
   await expect(loginPage.loginForm).toBeVisible();
 
-  await loginPage.emailAddress.fill(validCustomerEmail);
-  await loginPage.password.fill(validCustomerPassword);
-
-  await loginPage.submitLoginButton.click();
+  await loginPage.login(validCustomer.email, validCustomer.password);
 
   await expect(page).toHaveURL('/account');
   await expect(accountPage.pageTitle).toContainText('my account', {
     ignoreCase: true,
   });
-  await expect(accountPage.navigationMenu).toHaveText('Jane Doe');
+
+  await expect(accountPage.navigationMenu).toHaveText(validCustomer.fullName);
 });

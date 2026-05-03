@@ -8,7 +8,7 @@
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
     "module": "nodenext",
-    "target": "esnext",
+    "target": "es2025",
     "lib": ["esnext"],
     "types": ["node"],
 
@@ -18,20 +18,22 @@
     "declarationMap": true,
 
     // Style Options
-    // "noImplicitReturns": true,
-    // "noImplicitOverride": true,
-    // "noUnusedLocals": true,
-    // "noUnusedParameters": true,
-    // "noFallthroughCasesInSwitch": true,
-    // "noPropertyAccessFromIndexSignature": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noUncheckedSideEffectImports": true,
+    "forceConsistentCasingInFileNames": true,
 
     // Recommended Options
     "strict": true,
+    "noEmit": true,
     "jsx": "react-jsx",
     "verbatimModuleSyntax": true,
     "isolatedModules": true,
-    "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "resolveJsonModule": true /* Enable importing .json files. */
   }
 }
