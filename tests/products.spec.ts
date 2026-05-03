@@ -12,7 +12,7 @@ test('Verify user can view product details', async ({ page }) => {
   // However, it’s unclear how well this approach would work in a real-world project.
   const productName = 'Combination Pliers';
 
-  await homePage.navigateToHomePage();
+  await homePage.navigate();
   await expect(homePage.productsContainer).toBeVisible();
 
   const productCard = homePage.getProductCard(productName);

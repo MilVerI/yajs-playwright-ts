@@ -11,7 +11,7 @@ export class HomePage {
     this.productCardsList = page.locator('a[data-test^="product-"]');
   }
 
-  async navigateToHomePage(): Promise<void> {
+  async navigate(): Promise<void> {
     await this.page.goto('/');
   }
 
