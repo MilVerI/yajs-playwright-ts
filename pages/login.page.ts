@@ -1,22 +1,22 @@
 import type { Locator, Page } from '@playwright/test';
+import { BasePage } from '@pages/base.page.js';
+import { HeaderFragment } from '@pages/page_fragments/header.fragment.js';
 
-export class LoginPage {
-  page: Page;
-  loginForm: Locator;
-  emailAddressIput: Locator;
-  passwordInput: Locator;
-  submitLoginButton: Locator;
+export class LoginPage extends BasePage {
+  protected readonly url = '/auth/login';
+  public readonly header: HeaderFragment;
+  public readonly loginForm: Locator;
+  public readonly emailAddressIput: Locator;
+  public readonly passwordInput: Locator;
+  public readonly submitLoginButton: Locator;
 
   constructor(page: Page) {
-    this.page = page;
+    super(page);
+    this.header = new HeaderFragment(page);
     this.loginForm = page.locator('app-login');
     this.emailAddressIput = this.loginForm.getByTestId('email');
     this.passwordInput = this.loginForm.getByTestId('password');
     this.submitLoginButton = this.loginForm.getByTestId('login-submit');
-  }
-
-  async navigate(): Promise<void> {
-    await this.page.goto('/auth/login');
   }
 
   async login(email: string, password: string): Promise<void> {

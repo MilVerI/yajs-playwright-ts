@@ -1,17 +1,16 @@
 import type { Locator, Page } from '@playwright/test';
-
-export class AccountPage {
-  page: Page;
-  navigationMenu: Locator;
-  pageTitle: Locator;
+import { BasePage } from '@pages/base.page.js';
+import { HeaderFragment } from './page_fragments/header.fragment.js';
+export class AccountPage extends BasePage {
+  protected readonly url = '/account';
+  public readonly header: HeaderFragment;
+  public readonly navigationMenu: Locator;
+  public readonly pageTitle: Locator;
 
   constructor(page: Page) {
-    this.page = page;
-    this.navigationMenu = page.getByTestId('nav-menu');
+    super(page);
+    this.header = new HeaderFragment(page);
     this.pageTitle = page.getByTestId('page-title');
-  }
-
-  async navigate(): Promise<void> {
-    await this.page.goto('/account');
+    this.navigationMenu = page.getByTestId('nav-menu');
   }
 }

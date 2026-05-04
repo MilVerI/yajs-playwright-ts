@@ -1,18 +1,18 @@
 import type { Locator, Page } from '@playwright/test';
+import { BasePage } from '@pages/base.page.js';
+import { HeaderFragment } from '@pages/page_fragments/header.fragment.js';
 
-export class HomePage {
-  page: Page;
-  productsContainer: Locator;
-  productCardsList: Locator;
+export class HomePage extends BasePage {
+  protected readonly url = '/';
+  public readonly header: HeaderFragment;
+  public readonly productsContainer: Locator;
+  public readonly productCardsList: Locator;
 
   constructor(page: Page) {
-    this.page = page;
+    super(page);
+    this.header = new HeaderFragment(page);
     this.productsContainer = page.locator('div[data-test].container');
     this.productCardsList = page.locator('a[data-test^="product-"]');
-  }
-
-  async navigate(): Promise<void> {
-    await this.page.goto('/');
   }
 
   getProductCard(productNameVale: string): Locator {
