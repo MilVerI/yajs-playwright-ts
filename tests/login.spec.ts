@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { config } from 'dotenv';
-import { LoginPage } from '../pages/login.page.js';
-import { AccountPage } from '../pages/account.page.js';
+import { LoginPage } from '@pages/login.page.js';
+import { AccountPage } from '@pages/account.page.js';
 
 config({ path: '.env.local' });
 
