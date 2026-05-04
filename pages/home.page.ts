@@ -15,14 +15,21 @@ export class HomePage extends BasePage {
     this.productCardsList = page.locator('a[data-test^="product-"]');
   }
 
-  getProductCard(productNameVale: string): Locator {
+  getProductCard(productName: string): Locator {
     return this.productCardsList.filter({
-      has: this.page.getByText(productNameVale, { exact: true }),
+      has: this.page.getByText(productName, { exact: true }),
     });
   }
 
-  async getproductPriceValue(productCard: Locator): Promise<string> {
-    const productPrice = productCard.getByTestId('product-price');
-    return ((await productPrice.textContent()) ?? '0').replace('$', '');
+  async getProductPriceValue(productName: string): Promise<string> {
+    const productPrice =
+      this.getProductCard(productName).getByTestId('product-price');
+    const text = await productPrice.textContent();
+    if (!text) throw new Error(`Price not found for: ${productName}`);
+    return text.replace('$', '');
+  }
+
+  async clickProductCard(productName: string) {
+    await this.getProductCard(productName).click();
   }
 }
