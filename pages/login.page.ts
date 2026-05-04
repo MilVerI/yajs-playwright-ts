@@ -15,7 +15,7 @@ export class LoginPage {
     this.submitLoginButton = this.loginForm.getByTestId('login-submit');
   }
 
-  async navigateToLoginPage(): Promise<void> {
+  async navigate(): Promise<void> {
     await this.page.goto('/auth/login');
   }
 

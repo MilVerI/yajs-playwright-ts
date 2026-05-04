@@ -19,7 +19,7 @@ test('Verify login with valid credentials', async ({ page }) => {
   const loginPage = new LoginPage(page);
   const accountPage = new AccountPage(page);
 
-  await loginPage.navigateToLoginPage();
+  await loginPage.navigate();
 
   await expect(loginPage.loginForm).toBeVisible();
 

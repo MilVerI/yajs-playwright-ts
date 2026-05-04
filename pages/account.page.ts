@@ -11,7 +11,7 @@ export class AccountPage {
     this.pageTitle = page.getByTestId('page-title');
   }
 
-  async navigateToAccountPage(): Promise<void> {
+  async navigate(): Promise<void> {
     await this.page.goto('/account');
   }
 }
