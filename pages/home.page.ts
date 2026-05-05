@@ -7,12 +7,16 @@ export class HomePage extends BasePage {
   public readonly header: HeaderFragment;
   public readonly productsContainer: Locator;
   public readonly productCardsList: Locator;
+  public readonly productName: Locator;
+  public readonly sortingSelect: Locator;
 
   constructor(page: Page) {
     super(page);
     this.header = new HeaderFragment(page);
     this.productsContainer = page.locator('div[data-test].container');
     this.productCardsList = page.locator('a[data-test^="product-"]');
+    this.productName = this.productCardsList.getByTestId('product-name');
+    this.sortingSelect = page.getByTestId('sort');
   }
 
   getProductCard(productName: string): Locator {
@@ -31,5 +35,9 @@ export class HomePage extends BasePage {
 
   async clickProductCard(productName: string) {
     await this.getProductCard(productName).click();
+  }
+
+  async getProductNames(): Promise<string[]> {
+    return (await this.productName.allTextContents()).map((s) => s.trim());
   }
 }

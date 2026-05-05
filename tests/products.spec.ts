@@ -26,7 +26,7 @@ test('Verify user can view product details', async ({ page }) => {
 test('Verify user can add product to cart', async ({ page }) => {
   const homePage = new HomePage(page);
   const productPage = new ProductPage(page);
-  const checkout = new CheckoutPage(page);
+  const checkoutPage = new CheckoutPage(page);
   const productName = 'Slip Joint Pliers';
 
   await test.step('Navigate to product page', async () => {
@@ -52,21 +52,45 @@ test('Verify user can add product to cart', async ({ page }) => {
     await productPage.header.clickCartItem();
 
     await expect(page).toHaveURL('/checkout');
-    await expect(checkout.cart.productTitle).toHaveText(productName);
-    await expect(checkout.cart.productQuantity).toHaveValue('1');
-    await expect(checkout.cart.proceedToCheckoutButton).toBeVisible();
+    await expect(checkoutPage.cart.productTitle).toHaveText(productName);
+    await expect(checkoutPage.cart.productQuantity).toHaveValue('1');
+    await expect(checkoutPage.cart.proceedToCheckoutButton).toBeVisible();
   });
 });
 
-// test.describe('Sorting by product name', () => {
-//   test('Verify user can perform sorting by name: asc', async ({ page }) => {
-//     const productPage = new ProductPage(page);
-//   });
+test.describe('Sorting by product name', () => {
+  test('Verify user can perform sorting by name: Name A - Z', async ({
+    page,
+  }) => {
+    const homePage = new HomePage(page);
 
-//   test('Verify user can perform sorting by name: desc', async ({ page }) => {
-//     const productPage = new ProductPage(page);
-//   });
-// });
+    await homePage.navigate();
+    await expect(homePage.sortingSelect).toBeVisible();
+    await homePage.sortingSelect.selectOption({ value: 'name,asc' });
+    await expect(homePage.productName.first()).not.toBeEmpty();
+
+    const actual = await homePage.getProductNames();
+    const expected = [...actual].sort((a, b) => a.localeCompare(b));
+
+    expect(actual).toEqual(expected);
+  });
+
+  test('Verify user can perform sorting by name: Name Z - A', async ({
+    page,
+  }) => {
+    const homePage = new HomePage(page);
+
+    await homePage.navigate();
+    await expect(homePage.sortingSelect).toBeVisible();
+    await homePage.sortingSelect.selectOption({ value: 'name,desc' });
+    await expect(homePage.productName.first()).not.toBeEmpty();
+
+    const actual = await homePage.getProductNames();
+    const expected = [...actual].sort((a, b) => b.localeCompare(a));
+
+    expect(actual).toEqual(expected);
+  });
+});
 
 // test.describe('Sorting by product price', () => {
 //   test('Verify user can perform sorting by price: asc', async ({ page }) => {
