@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test';
 import { ProductPage } from '@pages/product.page.js';
 import { HomePage } from '@pages/home.page.js';
 import { CheckoutPage } from '@pages/checkout/checkout.page.js';
+import { PowerTools } from '@enums/product-categories.js';
 
 test('Verify user can view product details', async ({ page }) => {
   const productPage = new ProductPage(page);
@@ -10,7 +11,7 @@ test('Verify user can view product details', async ({ page }) => {
   const productName = 'Combination Pliers';
 
   await homePage.navigate();
-  await expect(homePage.productsContainer).toBeVisible();
+  await expect(homePage.productNames.first()).toBeVisible();
 
   const productPriceValue = await homePage.getProductPriceValue(productName);
   await homePage.clickProductCard(productName);
@@ -31,7 +32,7 @@ test('Verify user can add product to cart', async ({ page }) => {
 
   await test.step('Navigate to product page', async () => {
     await homePage.navigate();
-    await expect(homePage.productsContainer).toBeVisible();
+    await expect(homePage.productNames.first()).toBeVisible();
 
     const productPriceValue = await homePage.getProductPriceValue(productName);
     await homePage.clickProductCard(productName);
@@ -58,6 +59,8 @@ test('Verify user can add product to cart', async ({ page }) => {
   });
 });
 
+// expect.poll — helps prevent fakiless caused by user UI updates
+
 test.describe('Sorting by product name', () => {
   test('Verify user can perform sorting by name: Name A - Z', async ({
     page,
@@ -66,13 +69,21 @@ test.describe('Sorting by product name', () => {
 
     await homePage.navigate();
     await expect(homePage.sortingSelect).toBeVisible();
-    await homePage.sortingSelect.selectOption({ value: 'name,asc' });
-    await expect(homePage.productName.first()).not.toBeEmpty();
 
-    const actual = await homePage.getProductNames();
-    const expected = [...actual].sort((a, b) => a.localeCompare(b));
+    await homePage.selectSortingOption('name,asc');
 
-    expect(actual).toEqual(expected);
+    await expect
+      .poll(
+        async (): Promise<boolean> => {
+          const names = await homePage.getProductNames();
+          return homePage.validateSort(names, 'asc');
+        },
+        {
+          message: 'Sorting Name A-Z failed',
+          timeout: 5000,
+        },
+      )
+      .toBe(true);
   });
 
   test('Verify user can perform sorting by name: Name Z - A', async ({
@@ -82,24 +93,96 @@ test.describe('Sorting by product name', () => {
 
     await homePage.navigate();
     await expect(homePage.sortingSelect).toBeVisible();
-    await homePage.sortingSelect.selectOption({ value: 'name,desc' });
-    await expect(homePage.productName.first()).not.toBeEmpty();
 
-    const actual = await homePage.getProductNames();
-    const expected = [...actual].sort((a, b) => b.localeCompare(a));
+    await homePage.selectSortingOption('name,desc');
 
-    expect(actual).toEqual(expected);
+    await expect
+      .poll(
+        async (): Promise<boolean> => {
+          const names = await homePage.getProductNames();
+          return homePage.validateSort(names, 'desc');
+        },
+        {
+          message: 'Sorting Name Z - A failed',
+          timeout: 5000,
+        },
+      )
+      .toBe(true);
   });
 });
 
-// test.describe('Sorting by product price', () => {
-//   test('Verify user can perform sorting by price: asc', async ({ page }) => {
-//     const productPage = new ProductPage(page);
-//   });
+test.describe('Sorting by product price', () => {
+  test('Verify user can perform sorting by price: Price (Low - High)', async ({
+    page,
+  }) => {
+    const homePage = new HomePage(page);
 
-//   test('Verify user can perform sorting by price: desc', async ({ page }) => {
-//     const productPage = new ProductPage(page);
-//   });
-// });
+    await homePage.navigate();
+    await expect(homePage.sortingSelect).toBeVisible();
 
-// test('Verify user can filter products by category', async ({ page }) => {});
+    await homePage.selectSortingOption('price,asc');
+
+    await expect
+      .poll(
+        async (): Promise<boolean> => {
+          const prices = await homePage.getProductPrices();
+          return homePage.validateSort(prices, 'asc');
+        },
+        {
+          message: 'Sorting Price (Low - High) failed',
+          timeout: 5000,
+        },
+      )
+      .toBe(true);
+  });
+});
+
+test('Verify user can perform sorting by price: Price (High - Low)', async ({
+  page,
+}) => {
+  const homePage = new HomePage(page);
+
+  await homePage.navigate();
+  await expect(homePage.sortingSelect).toBeVisible();
+
+  await homePage.selectSortingOption('price,desc');
+
+  await expect
+    .poll(
+      async (): Promise<boolean> => {
+        const prices = await homePage.getProductPrices();
+        return homePage.validateSort(prices, 'desc');
+      },
+      {
+        message: 'Sorting (High - Low) failed',
+        timeout: 5000,
+      },
+    )
+    .toBe(true);
+});
+
+// Products on the Homepage do not have a clear visual or verifiable indicator of their category
+
+test('Verify user can filter products by category', async ({ page }) => {
+  const homePage = new HomePage(page);
+
+  await homePage.navigate();
+  await expect(homePage.subcategoryCheckboxes.first()).toBeVisible();
+
+  const subcategoryOption = homePage.getSubcategory(PowerTools.SANDER);
+
+  await subcategoryOption.check();
+
+  await expect
+    .poll(
+      async (): Promise<boolean> => {
+        const names = await homePage.getProductNames();
+        return homePage.validateFiltering(names, PowerTools.SANDER);
+      },
+      {
+        message: `Filtering by ${PowerTools.SANDER} failed`,
+        timeout: 5000,
+      },
+    )
+    .toBe(true);
+});
