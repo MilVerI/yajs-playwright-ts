@@ -16,6 +16,13 @@ const validCustomer = {
 const authFile = path.join(process.cwd(), 'playwright/.auth/user.json');
 
 setup('authenticate', async ({ page }) => {
+  // eslint-disable-next-line playwright/no-skipped-test
+  setup.skip(
+    !!process.env.CI,
+    'Skipped on CI because of Cloudflare protection',
+  );
+  // but how we'll run tests that need an auth?)))))
+
   const loginPage = new LoginPage(page);
   const accountPage = new AccountPage(page);
 
