@@ -2,6 +2,11 @@ import type { Locator, Page } from '@playwright/test';
 import { BasePage } from '@pages/base.page.js';
 import { HeaderFragment } from '@pages/page_fragments/header.fragment.js';
 
+type ProductDataTypeMap = {
+  name: string;
+  price: number;
+};
+
 export class HomePage extends BasePage {
   protected readonly url = '/';
   public readonly header: HeaderFragment;
@@ -37,18 +42,44 @@ export class HomePage extends BasePage {
     const productPrice =
       this.getProductCard(productName).getByTestId('product-price');
     const text = await productPrice.textContent();
-    if (!text) throw new Error(`Price not found for: ${productName}`);
-    return text.replace('$', '');
+
+    return text ? text.replace('$', '') : '';
   }
 
-  async getProductNames(): Promise<string[]> {
-    return (await this.productNames.allTextContents()).map((s) => s.trim());
-  }
-
-  async getProductPrices(): Promise<number[]> {
-    return (await this.productPrices.allTextContents()).map((s) =>
-      parseFloat(s.replace('$', '')),
-    );
+  /**
+   * Retrieves and processes an array of product data from the UI (names, prices, etc.).
+   *
+   * @template K - A key from the {@link ProductDataTypeMap} type map that defines the type of the returned data.
+   * @param {K} type - The data category to retrieve (`‘names’` or `‘prices’`).
+   * @returns {Promise<ProductDataTypeMap[K][]>} An array of strings for `‘names’` or an array of numbers for `‘prices’`.
+   *
+   * @example
+   * // Returns string[]
+   * const names = await homePage.getProductData(‘names’);
+   *
+   * @example
+   * // Returns number[]
+   * const prices = await homePage.getProductData(‘prices’);
+   */
+  async getProductData<K extends keyof ProductDataTypeMap>(
+    type: K,
+  ): Promise<ProductDataTypeMap[K][]> {
+    switch (type) {
+      case 'name': {
+        const contents = await this.productNames.allTextContents();
+        return contents.map((s) => s.trim()) as ProductDataTypeMap[K][];
+      }
+      case 'price': {
+        const contents = await this.productPrices.allTextContents();
+        return contents.map((s) =>
+          parseFloat(s.replace('$', '')),
+        ) as ProductDataTypeMap[K][];
+      }
+      default: {
+        const exhaustiveCheck: never = type;
+        return exhaustiveCheck;
+      }
+    }
   }
 
   async selectSortingOption(option: string): Promise<void> {

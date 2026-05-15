@@ -61,8 +61,23 @@ test('Verify user can add product to cart', async ({ page }) => {
 
 // expect.poll — helps prevent fakiless caused by user UI updates
 
-test.describe('Sorting by product name', () => {
-  test('Verify user can perform sorting by name: Name A - Z', async ({
+const sortingCases = [
+  { namePart: 'by name: Name A - Z', sortingOption: 'name', order: 'asc' },
+  { namePart: 'by name: Name Z - A', sortingOption: 'name', order: 'desc' },
+  {
+    namePart: 'by price: Price (Low - High)',
+    sortingOption: 'price',
+    order: 'asc',
+  },
+  {
+    namePart: 'by price: Price (High - Low)',
+    sortingOption: 'price',
+    order: 'desc',
+  },
+] as const;
+
+sortingCases.forEach((testData) =>
+  test(`Verify user can perform sorting ${testData.namePart}`, async ({
     page,
   }) => {
     const homePage = new HomePage(page);
@@ -70,96 +85,24 @@ test.describe('Sorting by product name', () => {
     await homePage.navigate();
     await expect(homePage.sortingSelect).toBeVisible();
 
-    await homePage.selectSortingOption('name,asc');
+    await homePage.selectSortingOption(
+      `${testData.sortingOption},${testData.order}`,
+    );
 
     await expect
       .poll(
         async (): Promise<boolean> => {
-          const names = await homePage.getProductNames();
-          return homePage.validateSort(names, 'asc');
+          const items = await homePage.getProductData(testData.sortingOption);
+          return homePage.validateSort(items, testData.order);
         },
         {
-          message: 'Sorting Name A-Z failed',
+          message: `Sorting ${testData.namePart} failed`,
           timeout: 5000,
         },
       )
       .toBe(true);
-  });
-
-  test('Verify user can perform sorting by name: Name Z - A', async ({
-    page,
-  }) => {
-    const homePage = new HomePage(page);
-
-    await homePage.navigate();
-    await expect(homePage.sortingSelect).toBeVisible();
-
-    await homePage.selectSortingOption('name,desc');
-
-    await expect
-      .poll(
-        async (): Promise<boolean> => {
-          const names = await homePage.getProductNames();
-          return homePage.validateSort(names, 'desc');
-        },
-        {
-          message: 'Sorting Name Z - A failed',
-          timeout: 5000,
-        },
-      )
-      .toBe(true);
-  });
-});
-
-test.describe('Sorting by product price', () => {
-  test('Verify user can perform sorting by price: Price (Low - High)', async ({
-    page,
-  }) => {
-    const homePage = new HomePage(page);
-
-    await homePage.navigate();
-    await expect(homePage.sortingSelect).toBeVisible();
-
-    await homePage.selectSortingOption('price,asc');
-
-    await expect
-      .poll(
-        async (): Promise<boolean> => {
-          const prices = await homePage.getProductPrices();
-          return homePage.validateSort(prices, 'asc');
-        },
-        {
-          message: 'Sorting Price (Low - High) failed',
-          timeout: 5000,
-        },
-      )
-      .toBe(true);
-  });
-});
-
-test('Verify user can perform sorting by price: Price (High - Low)', async ({
-  page,
-}) => {
-  const homePage = new HomePage(page);
-
-  await homePage.navigate();
-  await expect(homePage.sortingSelect).toBeVisible();
-
-  await homePage.selectSortingOption('price,desc');
-
-  await expect
-    .poll(
-      async (): Promise<boolean> => {
-        const prices = await homePage.getProductPrices();
-        return homePage.validateSort(prices, 'desc');
-      },
-      {
-        message: 'Sorting (High - Low) failed',
-        timeout: 5000,
-      },
-    )
-    .toBe(true);
-});
+  }),
+);
 
 // Products on the Homepage do not have a clear visual or verifiable indicator of their category
 
@@ -176,7 +119,7 @@ test('Verify user can filter products by category', async ({ page }) => {
   await expect
     .poll(
       async (): Promise<boolean> => {
-        const names = await homePage.getProductNames();
+        const names = await homePage.getProductData('name');
         return homePage.validateFiltering(names, PowerTools.SANDER);
       },
       {
