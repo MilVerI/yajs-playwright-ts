@@ -3,6 +3,7 @@ import { ProductPage } from '@pages/product.page.js';
 import { HomePage } from '@pages/home.page.js';
 import { CheckoutPage } from '@pages/checkout/checkout.page.js';
 import { PowerTools } from '@enums/product-categories.js';
+import { validateSort, validateFiltering } from '@utils/assertions.js';
 
 test('Verify user can view product details', async ({ page }) => {
   const productPage = new ProductPage(page);
@@ -93,7 +94,7 @@ sortingCases.forEach((testData) =>
       .poll(
         async (): Promise<boolean> => {
           const items = await homePage.getProductData(testData.sortingOption);
-          return homePage.validateSort(items, testData.order);
+          return validateSort(items, testData.order);
         },
         {
           message: `Sorting ${testData.namePart} failed`,
@@ -120,7 +121,7 @@ test('Verify user can filter products by category', async ({ page }) => {
     .poll(
       async (): Promise<boolean> => {
         const names = await homePage.getProductData('name');
-        return homePage.validateFiltering(names, PowerTools.SANDER);
+        return validateFiltering(names, PowerTools.SANDER);
       },
       {
         message: `Filtering by ${PowerTools.SANDER} failed`,

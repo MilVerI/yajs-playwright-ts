@@ -3,12 +3,12 @@
   "compilerOptions": {
     // Aliases
     "paths": {
-      "@pages/*": ["./pages/*"],
+      "@pages/*": ["./src/pages/*"],
       "@tests/*": ["./tests/*"],
       "@pw/*": ["./playwright/*"],
-      "@enums/*": ["./enums/*"]
+      "@enums/*": ["./src/enums/*"],
+      "@utils/*": ["./src/utils/*"]
     },
-
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
     "module": "nodenext",

@@ -1,5 +1,5 @@
 import type { Locator, Page } from '@playwright/test';
-import { PageConstructor } from '@pages/page.constructor.js';
+import { PageConstructor } from '../page.constructor.js';
 
 export class HeaderFragment extends PageConstructor {
   public readonly headerContainer: Locator;

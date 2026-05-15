@@ -1,6 +1,6 @@
 // import { expect } from '@playwright/test';
 import type { Locator, Page } from '@playwright/test';
-import { PageConstructor } from '@pages/page.constructor.js';
+import { PageConstructor } from '../page.constructor.js';
 
 export class CartStep extends PageConstructor {
   public readonly cartTable: Locator;

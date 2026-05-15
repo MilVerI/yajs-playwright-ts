@@ -1,5 +1,5 @@
 import type { Locator, Page } from '@playwright/test';
-import { BasePage } from '@pages/base.page.js';
+import { BasePage } from './base.page.js';
 import { HeaderFragment } from './page_fragments/header.fragment.js';
 
 export class AccountPage extends BasePage {
