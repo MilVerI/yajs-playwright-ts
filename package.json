@@ -4,7 +4,8 @@
   "description": "Repo for practice",
   "main": "index.js",
   "scripts": {
-    "chromium:run:all": "npx playwright test  --project=chromium --headed --ui"
+    "chromium:run:all": "npx playwright test  --project=chromium --headed --ui",
+    "codegen": "npx playwright codegen"
   },
   "keywords": [],
   "author": "",
