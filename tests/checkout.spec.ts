@@ -1,24 +1,6 @@
 import { expect } from '@playwright/test';
 import { test } from '@fixtures/appPages.js';
-import { config } from 'dotenv';
-import { PaymentMethods } from '@enums/payment-methods.js';
-
-config({ path: '.env.local' });
-
-const validCustomer = {
-  fullName: process.env.VALID_CUSTOMER_FULL_NAME as string,
-  country: 'Austria',
-  countryCode: 'AT',
-  postalCode: '00000',
-  houseNumber: '11',
-  paymentMethod: PaymentMethods.CREDIT_CARD,
-  cardNumber: '1111-1111-1111-1111',
-  cardHolderName: process.env.VALID_CUSTOMER_FULL_NAME as string,
-  expirationDate: new Date(
-    new Date().setMonth(new Date().getMonth() + 3),
-  ).toLocaleDateString('en-US', { month: '2-digit', year: 'numeric' }),
-  cvv: '111',
-};
+import { validCustomer } from '../test_data/validCustomer.js';
 
 test('Verify user can add product to cart', async ({ allPages, page }) => {
   const productName = 'Slip Joint Pliers';
@@ -65,7 +47,7 @@ test('Verify user can add product to cart', async ({ allPages, page }) => {
 
 test('Verify chekout user flow', async ({ loggedInPage, page }) => {
   await loggedInPage.homePage.navigate();
-  
+
   await expect
     .poll(
       async () => {

@@ -1,6 +1,6 @@
 import { expect } from '@playwright/test';
 import { test } from '@fixtures/appPages.js';
-import { PowerTools } from '@enums/product-categories.js';
+import { PowerTools } from '@enums/productCategories.js';
 import { validateSort, validateFiltering } from '@utils/assertions.js';
 
 test('Verify user can view product details', async ({ allPages, page }) => {

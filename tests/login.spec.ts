@@ -1,15 +1,6 @@
 import { expect } from '@playwright/test';
 import { test } from '@fixtures/appPages.js';
-import { config } from 'dotenv';
-
-config({ path: '.env.local' });
-
-//  move this to the fixture later if there are too many users as part of 'users'
-const validCustomer = {
-  email: process.env.VALID_CUSTOMER_EMAIL as string,
-  password: process.env.VALID_CUSTOMER_PASSWORD as string,
-  fullName: process.env.VALID_CUSTOMER_FULL_NAME as string,
-};
+import { validCustomer } from '../test_data/validCustomer.js';
 
 test('Verify login with valid credentials', async ({ allPages, page }) => {
   // eslint-disable-next-line playwright/no-skipped-test
