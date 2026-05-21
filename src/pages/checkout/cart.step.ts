@@ -8,6 +8,7 @@ export class CartStep extends PageConstructor {
   public readonly productTitle: Locator;
   public readonly productQuantity: Locator;
   public readonly productPrice: Locator;
+  public readonly rowTotalPrice: Locator;
   public readonly proceedToCheckoutButton: Locator;
 
   constructor(page: Page) {
@@ -17,6 +18,7 @@ export class CartStep extends PageConstructor {
     this.productTitle = this.productRow.getByTestId('product-title');
     this.productQuantity = this.productRow.getByTestId('product-quantity');
     this.productPrice = this.productRow.getByTestId('product-price');
+    this.rowTotalPrice = this.productRow.getByTestId('line-price');
     this.proceedToCheckoutButton = page.getByTestId('proceed-1');
   }
 

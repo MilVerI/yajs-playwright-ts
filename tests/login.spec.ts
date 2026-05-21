@@ -1,7 +1,6 @@
-import { test, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from '@fixtures/appPages.js';
 import { config } from 'dotenv';
-import { LoginPage } from '@pages/login.page.js';
-import { AccountPage } from '@pages/account.page.js';
 
 config({ path: '.env.local' });
 
@@ -12,23 +11,22 @@ const validCustomer = {
   fullName: process.env.VALID_CUSTOMER_FULL_NAME as string,
 };
 
-test('Verify login with valid credentials', async ({ page }) => {
+test('Verify login with valid credentials', async ({ allPages, page }) => {
   // eslint-disable-next-line playwright/no-skipped-test
   test.skip(!!process.env.CI, 'Skipped on CI because of Cloudflare protection');
 
-  const loginPage = new LoginPage(page);
-  const accountPage = new AccountPage(page);
+  await allPages.loginPage.navigate();
 
-  await loginPage.navigate();
+  await expect(allPages.loginPage.loginForm).toBeVisible();
 
-  await expect(loginPage.loginForm).toBeVisible();
-
-  await loginPage.login(validCustomer.email, validCustomer.password);
+  await allPages.loginPage.login(validCustomer.email, validCustomer.password);
 
   await expect(page).toHaveURL('/account');
-  await expect(accountPage.pageTitle).toContainText('my account', {
+  await expect(allPages.accountPage.pageTitle).toContainText('my account', {
     ignoreCase: true,
   });
 
-  await expect(accountPage.navigationMenu).toHaveText(validCustomer.fullName);
+  await expect(allPages.accountPage.navigationMenu).toHaveText(
+    validCustomer.fullName,
+  );
 });
