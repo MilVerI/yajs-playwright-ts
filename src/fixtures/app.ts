@@ -3,8 +3,8 @@ import { AllPages } from '@pages/allPages.js';
 import { config } from 'dotenv';
 
 type AppPages = {
-  loggedInPage: AllPages;
-  allPages: AllPages;
+  loggedInApp: AllPages;
+  app: AllPages;
 };
 
 config({ path: '.env.local' });
@@ -16,22 +16,22 @@ const validCustomer = {
 };
 
 export const test = base.extend<AppPages>({
-  allPages: async ({ page }, use) => {
-    const allPages = new AllPages(page);
+  app: async ({ page }, use) => {
+    const app = new AllPages(page);
 
-    await use(allPages);
+    await use(app);
   },
 
-  loggedInPage: async ({ allPages, page }, use) => {
-    await allPages.loginPage.navigate();
-    await expect(allPages.loginPage.loginForm).toBeVisible();
-    await allPages.loginPage.login(validCustomer.email, validCustomer.password);
+  loggedInApp: async ({ app, page }, use) => {
+    await app.loginPage.navigate();
+    await expect(app.loginPage.loginForm).toBeVisible();
+    await app.loginPage.login(validCustomer.email, validCustomer.password);
     await expect(page).toHaveURL('/account');
 
-    await expect(allPages.accountPage.navigationMenu).toHaveText(
+    await expect(app.accountPage.navigationMenu).toHaveText(
       validCustomer.fullName,
     );
 
-    await use(allPages);
+    await use(app);
   },
 });

@@ -1,28 +1,24 @@
 import { expect } from '@playwright/test';
-import { test } from '@fixtures/appPages.js';
+import { test } from '@fixtures/app.js';
 import { PowerTools } from '@enums/productCategories.js';
 import { validateSort, validateFiltering } from '@utils/assertions.js';
 
-test('Verify user can view product details', async ({ allPages, page }) => {
+test('Verify user can view product details', async ({ app, page }) => {
   const productName = 'Combination Pliers';
 
-  await allPages.homePage.navigate();
-  await expect(allPages.homePage.productNames.first()).toBeVisible();
+  await app.homePage.navigate();
+  await expect(app.homePage.productNames.first()).toBeVisible();
 
   const productPriceValue =
-    await allPages.homePage.getProductPriceValue(productName);
-  await allPages.homePage.clickProductCard(productName);
+    await app.homePage.getProductPriceValue(productName);
+  await app.homePage.clickProductCard(productName);
 
   await expect(page).toHaveURL(/\/product\/[A-Z0-9]+/);
-  await expect(allPages.productPage.productPageTitle).toContainText(
-    productName,
-  );
-  await expect(allPages.productPage.productPrice).toContainText(
-    productPriceValue,
-  );
-  await expect(allPages.productPage.addToCartButton).toBeVisible();
-  await expect(allPages.productPage.addToFavoritesButton).toBeVisible();
-  await expect(allPages.productPage.compareButton).toBeVisible();
+  await expect(app.productPage.productPageTitle).toContainText(productName);
+  await expect(app.productPage.productPrice).toContainText(productPriceValue);
+  await expect(app.productPage.addToCartButton).toBeVisible();
+  await expect(app.productPage.addToFavoritesButton).toBeVisible();
+  await expect(app.productPage.compareButton).toBeVisible();
 });
 
 // expect.poll — helps prevent fakiless caused by user UI updates
@@ -44,21 +40,21 @@ const sortingCases = [
 
 sortingCases.forEach((testData) =>
   test(`Verify user can perform sorting ${testData.namePart}`, async ({
-    allPages,
+    app,
   }) => {
-    // const allPages.homePage = new HomePage(page);
+    // const app.homePage = new HomePage(page);
 
-    await allPages.homePage.navigate();
-    await expect(allPages.homePage.sortingSelect).toBeVisible();
+    await app.homePage.navigate();
+    await expect(app.homePage.sortingSelect).toBeVisible();
 
-    await allPages.homePage.selectSortingOption(
+    await app.homePage.selectSortingOption(
       `${testData.sortingOption},${testData.order}`,
     );
 
     await expect
       .poll(
         async (): Promise<boolean> => {
-          const items = await allPages.homePage.getProductData(
+          const items = await app.homePage.getProductData(
             testData.sortingOption,
           );
           return validateSort(items, testData.order);
@@ -74,18 +70,18 @@ sortingCases.forEach((testData) =>
 
 // Products on the Homepage do not have a clear visual or verifiable indicator of their category
 
-test('Verify user can filter products by category', async ({ allPages }) => {
-  await allPages.homePage.navigate();
-  await expect(allPages.homePage.subcategoryCheckboxes.first()).toBeVisible();
+test('Verify user can filter products by category', async ({ app }) => {
+  await app.homePage.navigate();
+  await expect(app.homePage.subcategoryCheckboxes.first()).toBeVisible();
 
-  const subcategoryOption = allPages.homePage.getSubcategory(PowerTools.SANDER);
+  const subcategoryOption = app.homePage.getSubcategory(PowerTools.SANDER);
 
   await subcategoryOption.check();
 
   await expect
     .poll(
       async (): Promise<boolean> => {
-        const names = await allPages.homePage.getProductData('name');
+        const names = await app.homePage.getProductData('name');
         return validateFiltering(names, PowerTools.SANDER);
       },
       {

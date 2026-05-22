@@ -1,57 +1,49 @@
 import { expect } from '@playwright/test';
-import { test } from '@fixtures/appPages.js';
+import { test } from '@fixtures/app.js';
 import { validCustomer } from '../test_data/validCustomer.js';
 
-test('Verify user can add product to cart', async ({ allPages, page }) => {
+test('Verify user can add product to cart', async ({ app, page }) => {
   const productName = 'Slip Joint Pliers';
 
   await test.step('Navigate to product page', async () => {
-    await allPages.homePage.navigate();
-    await expect(allPages.homePage.productNames.first()).toBeVisible();
+    await app.homePage.navigate();
+    await expect(app.homePage.productNames.first()).toBeVisible();
 
     const productPriceValue =
-      await allPages.homePage.getProductPriceValue(productName);
-    await allPages.homePage.clickProductCard(productName);
+      await app.homePage.getProductPriceValue(productName);
+    await app.homePage.clickProductCard(productName);
 
     await expect(page).toHaveURL(/\/product\/[A-Z0-9]+/);
-    await expect(allPages.productPage.productPageTitle).toContainText(
-      productName,
-    );
-    await expect(allPages.productPage.productPrice).toContainText(
-      productPriceValue,
-    );
+    await expect(app.productPage.productPageTitle).toContainText(productName);
+    await expect(app.productPage.productPrice).toContainText(productPriceValue);
   });
 
   await test.step('Add product to cart', async () => {
-    await allPages.productPage.addToCartButton.click();
-    await expect(allPages.productPage.addToCartAlert).toBeVisible();
-    await expect(allPages.productPage.addToCartAlert).toBeHidden({
+    await app.productPage.addToCartButton.click();
+    await expect(app.productPage.addToCartAlert).toBeVisible();
+    await expect(app.productPage.addToCartAlert).toBeHidden({
       timeout: 8000,
     });
-    await expect(allPages.productPage.header.cartCounter).toHaveText('1');
+    await expect(app.productPage.header.cartCounter).toHaveText('1');
   });
 
   await test.step('Verify cart', async () => {
-    await allPages.productPage.header.clickCartItem();
+    await app.productPage.header.clickCartItem();
 
     await expect(page).toHaveURL('/checkout');
-    await expect(allPages.checkoutPage.cart.productTitle).toHaveText(
-      productName,
-    );
-    await expect(allPages.checkoutPage.cart.productQuantity).toHaveValue('1');
-    await expect(
-      allPages.checkoutPage.cart.proceedToCheckoutButton,
-    ).toBeVisible();
+    await expect(app.checkoutPage.cart.productTitle).toHaveText(productName);
+    await expect(app.checkoutPage.cart.productQuantity).toHaveValue('1');
+    await expect(app.checkoutPage.cart.proceedToCheckoutButton).toBeVisible();
   });
 });
 
-test('Verify chekout user flow', async ({ loggedInPage, page }) => {
-  await loggedInPage.homePage.navigate();
+test('Verify chekout user flow', async ({ loggedInApp, page }) => {
+  await loggedInApp.homePage.navigate();
 
   await expect
     .poll(
       async () => {
-        const items = await loggedInPage.homePage.getProductData('name');
+        const items = await loggedInApp.homePage.getProductData('name');
         return items?.[0];
       },
       {
@@ -61,96 +53,92 @@ test('Verify chekout user flow', async ({ loggedInPage, page }) => {
     )
     .toBeDefined();
 
-  const firstProduct = await loggedInPage.homePage.getFirstProductData();
+  const firstProduct = await loggedInApp.homePage.getFirstProductData();
 
-  await loggedInPage.homePage.clickProductCard(firstProduct.name);
+  await loggedInApp.homePage.clickProductCard(firstProduct.name);
   await expect(page).toHaveURL(/\/product\/[A-Z0-9]+/);
-  await expect(loggedInPage.productPage.productPageTitle).toContainText(
+  await expect(loggedInApp.productPage.productPageTitle).toContainText(
     firstProduct.name,
   );
 
-  await loggedInPage.productPage.addToCartButton.click();
-  await expect(loggedInPage.productPage.header.cartCounter).toHaveText('1');
+  await loggedInApp.productPage.addToCartButton.click();
+  await expect(loggedInApp.productPage.header.cartCounter).toHaveText('1');
 
-  await loggedInPage.productPage.header.clickCartItem();
+  await loggedInApp.productPage.header.clickCartItem();
   await expect(page).toHaveURL('/checkout');
-  await expect(loggedInPage.checkoutPage.currentStepLabel).toHaveText('Cart');
-  await expect(loggedInPage.checkoutPage.cart.productTitle).toContainText(
+  await expect(loggedInApp.checkoutPage.currentStepLabel).toHaveText('Cart');
+  await expect(loggedInApp.checkoutPage.cart.productTitle).toContainText(
     firstProduct.name,
   );
-  await expect(loggedInPage.checkoutPage.cart.productPrice).toContainText(
+  await expect(loggedInApp.checkoutPage.cart.productPrice).toContainText(
     '$' + `${firstProduct.price}`,
   );
-  await expect(loggedInPage.checkoutPage.cart.rowTotalPrice).toContainText(
+  await expect(loggedInApp.checkoutPage.cart.rowTotalPrice).toContainText(
     '$' + `${firstProduct.price}`,
   );
 
-  await loggedInPage.checkoutPage.cart.proceedToCheckoutButton.click();
+  await loggedInApp.checkoutPage.cart.proceedToCheckoutButton.click();
 
   const expectedGreetingMessage =
-    loggedInPage.checkoutPage.signIn.getExpectedGreeting(
-      validCustomer.fullName,
-    );
+    loggedInApp.checkoutPage.signIn.getExpectedGreeting(validCustomer.fullName);
 
-  await expect(loggedInPage.checkoutPage.signIn.greetingMessage).toHaveText(
+  await expect(loggedInApp.checkoutPage.signIn.greetingMessage).toHaveText(
     expectedGreetingMessage,
   );
 
-  await loggedInPage.checkoutPage.signIn.proceedToCheckoutButton.click();
-  await expect(loggedInPage.checkoutPage.currentStepLabel).toHaveText(
+  await loggedInApp.checkoutPage.signIn.proceedToCheckoutButton.click();
+  await expect(loggedInApp.checkoutPage.currentStepLabel).toHaveText(
     'Billing Address',
   );
 
-  await loggedInPage.checkoutPage.billingAddress.countrySelect.selectOption(
+  await loggedInApp.checkoutPage.billingAddress.countrySelect.selectOption(
     validCustomer.country,
   );
-  await loggedInPage.checkoutPage.billingAddress.postalCodeInput.fill(
+  await loggedInApp.checkoutPage.billingAddress.postalCodeInput.fill(
     validCustomer.postalCode,
   );
-  await loggedInPage.checkoutPage.billingAddress.houseNumberInput.fill(
+  await loggedInApp.checkoutPage.billingAddress.houseNumberInput.fill(
     validCustomer.houseNumber,
   );
 
   await expect(
-    loggedInPage.checkoutPage.billingAddress.countrySelect,
+    loggedInApp.checkoutPage.billingAddress.countrySelect,
   ).toHaveValue(validCustomer.countryCode);
   await expect(
-    loggedInPage.checkoutPage.billingAddress.postalCodeInput,
+    loggedInApp.checkoutPage.billingAddress.postalCodeInput,
   ).toHaveValue(validCustomer.postalCode);
   await expect(
-    loggedInPage.checkoutPage.billingAddress.houseNumberInput,
+    loggedInApp.checkoutPage.billingAddress.houseNumberInput,
   ).toHaveValue(validCustomer.houseNumber);
-  await expect(
-    loggedInPage.checkoutPage.billingAddress.streetInput,
-  ).toHaveValue(/^Test street \d+$/);
-  await expect(loggedInPage.checkoutPage.billingAddress.cityInput).toHaveValue(
+  await expect(loggedInApp.checkoutPage.billingAddress.streetInput).toHaveValue(
+    /^Test street \d+$/,
+  );
+  await expect(loggedInApp.checkoutPage.billingAddress.cityInput).toHaveValue(
     /^[a-zA-Z]+$/,
   );
-  await expect(loggedInPage.checkoutPage.billingAddress.stateInput).toHaveValue(
+  await expect(loggedInApp.checkoutPage.billingAddress.stateInput).toHaveValue(
     /^[a-zA-Z]+$/,
   );
 
-  await loggedInPage.checkoutPage.billingAddress.proceedToCheckoutButton.click();
-  await expect(loggedInPage.checkoutPage.currentStepLabel).toHaveText(
-    'Payment',
-  );
+  await loggedInApp.checkoutPage.billingAddress.proceedToCheckoutButton.click();
+  await expect(loggedInApp.checkoutPage.currentStepLabel).toHaveText('Payment');
 
-  await loggedInPage.checkoutPage.payment.paymentMethodSelect.selectOption(
+  await loggedInApp.checkoutPage.payment.paymentMethodSelect.selectOption(
     validCustomer.paymentMethod,
   );
-  await loggedInPage.checkoutPage.payment.creditCardNumberInput.fill(
+  await loggedInApp.checkoutPage.payment.creditCardNumberInput.fill(
     validCustomer.cardNumber,
   );
-  await loggedInPage.checkoutPage.payment.cardHolderNameInput.fill(
+  await loggedInApp.checkoutPage.payment.cardHolderNameInput.fill(
     validCustomer.cardHolderName,
   );
-  await loggedInPage.checkoutPage.payment.expirationDateInput.fill(
+  await loggedInApp.checkoutPage.payment.expirationDateInput.fill(
     validCustomer.expirationDate,
   );
-  await loggedInPage.checkoutPage.payment.cvvInput.fill(validCustomer.cvv);
+  await loggedInApp.checkoutPage.payment.cvvInput.fill(validCustomer.cvv);
 
-  await loggedInPage.checkoutPage.payment.confirmButton.click();
+  await loggedInApp.checkoutPage.payment.confirmButton.click();
   await expect(
-    loggedInPage.checkoutPage.payment.paymentSuccessMessageAlert,
+    loggedInApp.checkoutPage.payment.paymentSuccessMessageAlert,
   ).toHaveText('Payment was successful');
 });
