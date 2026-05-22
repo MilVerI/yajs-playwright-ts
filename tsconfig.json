@@ -7,7 +7,8 @@
       "@tests/*": ["./tests/*"],
       "@pw/*": ["./playwright/*"],
       "@enums/*": ["./src/enums/*"],
-      "@utils/*": ["./src/utils/*"]
+      "@utils/*": ["./src/utils/*"],
+      "@fixtures/*": ["./src/fixtures/*"]
     },
     // Environment Settings
     // See also https://aka.ms/tsconfig/module

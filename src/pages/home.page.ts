@@ -45,6 +45,33 @@ export class HomePage extends BasePage {
 
     return text ? text.replace('$', '') : '';
   }
+  /**
+   * Retrieves data for the first product in the list.
+   *
+   * @template K - A key from the {@link ProductDataTypeMap} type map that defines the type of the returned data.
+   * @param {K} type - The data category to retrieve (`‘names’` or `‘prices’`).
+   * @returns {Promise<ProductDataTypeMap>} An object containing the first product's data (name, price, etc.)
+   *
+   * @example
+   * const firstProduct = await page.getFirstProduct();
+   * console.log(firstProduct.name); // 'Product Name'
+   * console.log(firstProduct.price); // 99.99
+   */
+  async getFirstProductData(): Promise<{
+    [K in keyof ProductDataTypeMap]: ProductDataTypeMap[K];
+  }> {
+    const [names, prices] = await Promise.all([
+      this.getProductData('name'),
+      this.getProductData('price'),
+    ]);
+
+    return {
+      name: names[0],
+      price: prices[0],
+    } as {
+      [K in keyof ProductDataTypeMap]: ProductDataTypeMap[K];
+    };
+  }
 
   /**
    * Retrieves and processes an array of product data from the UI (names, prices, etc.).
