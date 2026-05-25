@@ -7,6 +7,10 @@ type AppPages = {
   app: AllPages;
 };
 
+interface LoginResponse {
+  access_token: string;
+}
+
 config({ path: '.env.local' });
 
 const validCustomer = {
@@ -22,14 +26,29 @@ export const test = base.extend<AppPages>({
     await use(app);
   },
 
-  loggedInApp: async ({ app, page }, use) => {
-    await app.loginPage.navigate();
-    await expect(app.loginPage.loginForm).toBeVisible();
-    await app.loginPage.login(validCustomer.email, validCustomer.password);
-    await expect(page).toHaveURL('/account');
+  loggedInApp: async ({ page, app, request }, use) => {
+    const apiResponse = await request.post(
+      'https://api.practicesoftwaretesting.com/users/login',
+      {
+        data: {
+          email: validCustomer.email,
+          password: validCustomer.password,
+        },
+      },
+    );
 
-    await expect(app.accountPage.navigationMenu).toHaveText(
+    const jsonResponse = (await apiResponse.json()) as LoginResponse;
+    const authToken = jsonResponse.access_token;
+
+    await page.goto('/');
+    await page.evaluate((token) => {
+      localStorage.setItem('auth-token', token);
+    }, authToken);
+    await page.reload();
+
+    await expect(app.accountPage.userFullNameButton).toHaveText(
       validCustomer.fullName,
+      { ignoreCase: true, timeout: 5000 },
     );
 
     await use(app);

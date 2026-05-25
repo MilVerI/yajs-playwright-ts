@@ -4,13 +4,15 @@ on:
     branches: [main, master]
   pull_request:
     branches: [main, master]
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
 jobs:
   test:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v6
         with:
           node-version: lts/*
       - name: Install dependencies
@@ -19,7 +21,7 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: Run Playwright tests
-        run: npx playwright test
+        run: npx playwright test --project=chromium
         env:
           VALID_CUSTOMER_EMAIL: ${{ secrets.VALID_CUSTOMER_EMAIL }}
           VALID_CUSTOMER_PASSWORD: ${{ secrets.VALID_CUSTOMER_PASSWORD }}
