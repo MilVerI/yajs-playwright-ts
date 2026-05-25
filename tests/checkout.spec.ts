@@ -38,6 +38,7 @@ test('Verify user can add product to cart', async ({ app, page }) => {
 });
 
 test('Verify chekout user flow', async ({ loggedInApp, page }) => {
+  // comment to test ci
   await loggedInApp.homePage.navigate();
 
   await expect
