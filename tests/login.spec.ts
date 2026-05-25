@@ -49,6 +49,6 @@ test('Verify login via API', async ({ page, app, request }) => {
 
   await expect(app.accountPage.userFullNameButton).toHaveText(
     validCustomer.fullName,
-    { ignoreCase: true },
+    { ignoreCase: true, timeout: 5000 },
   );
 });

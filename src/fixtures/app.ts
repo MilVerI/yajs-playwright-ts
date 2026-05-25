@@ -48,7 +48,7 @@ export const test = base.extend<AppPages>({
 
     await expect(app.accountPage.userFullNameButton).toHaveText(
       validCustomer.fullName,
-      { ignoreCase: true },
+      { ignoreCase: true, timeout: 5000 },
     );
 
     await use(app);
