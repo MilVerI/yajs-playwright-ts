@@ -46,8 +46,9 @@ export const test = base.extend<AppPages>({
     }, authToken);
     await page.reload();
 
-    await expect(app.accountPage.navigationMenu).toHaveText(
+    await expect(app.accountPage.userFullNameButton).toHaveText(
       validCustomer.fullName,
+      { ignoreCase: true },
     );
 
     await use(app);
